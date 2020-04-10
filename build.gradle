@@ -7,13 +7,13 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'org.manuel.spring'
+group = 'io.github.manuelarte.spring'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    maven { url  "https://dl.bintray.com/manueldoncelmartos/query-parameter" }
 }
 
 facets {
@@ -32,7 +32,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'org.manuel.spring:query-parameter:0.0.1-SNAPSHOT'
+    implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.1'
     compileOnly 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
     compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa:2.2.6.RELEASE'
 
