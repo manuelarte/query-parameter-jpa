@@ -1,12 +1,15 @@
 package io.github.manuelarte.spring.queryparameter.jpa.model;
 
+import io.github.manuelarte.spring.queryparameter.jpa.operatorpredicate.OperatorPredicate;
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
 import io.github.manuelarte.spring.queryparameter.query.BooleanOperator;
 import io.github.manuelarte.spring.queryparameter.query.OtherCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriterion;
-import io.github.manuelarte.spring.queryparameter.transformers.TypeTransformerProvider;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -14,8 +17,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import io.github.manuelarte.spring.queryparameter.jpa.operatorpredicate.OperatorPredicate;
 import org.springframework.data.jpa.domain.Specification;
 
 public class QueryCriteriaJpaSpecification<T> implements Specification<T> {
@@ -23,17 +24,17 @@ public class QueryCriteriaJpaSpecification<T> implements Specification<T> {
   private final Class<T> entity;
   private final QueryCriteria queryCriteria;
   private final TypeTransformerProvider typeTransformerProvider;
-  private final OperatorsPredicateProvider operatorsPredicateProvider;
+  private final OperatorPredicateProvider operatorPredicateProvider;
 
   public QueryCriteriaJpaSpecification(
       final Class<T> entity,
       final QueryCriteria queryCriteria,
       final TypeTransformerProvider typeTransformerProvider,
-      final OperatorsPredicateProvider operatorsPredicateProvider) {
+      final OperatorPredicateProvider operatorPredicateProvider) {
     this.entity = entity;
     this.queryCriteria = queryCriteria;
     this.typeTransformerProvider = typeTransformerProvider;
-    this.operatorsPredicateProvider = operatorsPredicateProvider;
+    this.operatorPredicateProvider = operatorPredicateProvider;
   }
 
   @Override
@@ -59,10 +60,19 @@ public class QueryCriteriaJpaSpecification<T> implements Specification<T> {
 
   private Predicate addPredicate(final Root<T> root, final QueryCriterion<?> queryCriterion,
       final CriteriaBuilder criteriaBuilder) {
-    final Object castedValue = typeTransformerProvider.getTransformer(entity,
-        queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
-        queryCriterion.getValue());
-    final OperatorPredicate<Object> operatorPredicate = operatorsPredicateProvider
+    // check if it's a list
+    final Object castedValue;
+    if (queryCriterion.getValue() instanceof List) {
+      castedValue = ((List) queryCriterion.getValue()).stream()
+          .map(it -> typeTransformerProvider.getTransformer(entity,
+              queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
+              it)).collect(Collectors.toList());
+    } else {
+      castedValue = typeTransformerProvider.getTransformer(entity,
+          queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
+          queryCriterion.getValue());
+    }
+    final OperatorPredicate<Object> operatorPredicate = operatorPredicateProvider
         .getOperatorPredicate(entity, queryCriterion.getKey(),
             (Operator<Object>) queryCriterion.getOperator());
     From join = root;

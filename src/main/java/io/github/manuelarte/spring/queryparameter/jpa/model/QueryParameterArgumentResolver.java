@@ -1,9 +1,16 @@
 package io.github.manuelarte.spring.queryparameter.jpa.model;
 
 import io.github.manuelarte.spring.queryparameter.config.QueryCriteriaParser;
+import io.github.manuelarte.spring.queryparameter.exceptions.QueryParserException;
 import io.github.manuelarte.spring.queryparameter.jpa.QueryParameter;
+import io.github.manuelarte.spring.queryparameter.model.QueryCriteriaParserContext;
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
-import io.github.manuelarte.spring.queryparameter.transformers.TypeTransformerProvider;
+import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,14 +25,14 @@ public class QueryParameterArgumentResolver implements HandlerMethodArgumentReso
 
   private final QueryCriteriaParser queryCriteriaParser;
   private final TypeTransformerProvider typeTransformerProvider;
-  private final OperatorsPredicateProvider operatorsPredicateProvider;
+  private final OperatorPredicateProvider operatorPredicateProvider;
 
   public QueryParameterArgumentResolver(final QueryCriteriaParser queryCriteriaParser,
       final TypeTransformerProvider typeTransformerProvider,
-      final OperatorsPredicateProvider operatorsPredicateProvider) {
+      final OperatorPredicateProvider operatorPredicateProvider) {
     this.queryCriteriaParser = queryCriteriaParser;
     this.typeTransformerProvider = typeTransformerProvider;
-    this.operatorsPredicateProvider = operatorsPredicateProvider;
+    this.operatorPredicateProvider = operatorPredicateProvider;
   }
 
   @Override
@@ -42,14 +49,49 @@ public class QueryParameterArgumentResolver implements HandlerMethodArgumentReso
 
     final String q = request.getParameter(queryParameter.paramName());
     if (q != null && !q.isEmpty()) {
-      final QueryCriteria queryCriteria = queryCriteriaParser.parse(q);
+      final QueryCriteriaParserContext context = createContext(queryParameter);
+      final QueryCriteria queryCriteria = queryCriteriaParser.parse(q, context);
       final Specification<?> specification =
           new QueryCriteriaJpaSpecification<>(
               queryParameter.entity(), queryCriteria, typeTransformerProvider,
-              operatorsPredicateProvider);
-      return specification;
+              operatorPredicateProvider);
+      if (parameter.getParameterType().equals(Specification.class)) {
+        return specification;
+      } else if (isValidOptional(parameter)) {
+        return Optional.of(specification);
+      } else {
+        throw new QueryParserException("Don't know how to parse to the class "
+            + parameter.getParameterType().getClass());
+      }
     } else {
-      return null;
+      if (parameter.getParameterType().equals(Specification.class)) {
+        return null;
+      } else if (isValidOptional(parameter)) {
+        return Optional.empty();
+      } else {
+        throw new QueryParserException("Don't know how to parse to the class "
+            + parameter.getParameterType().getClass());
+      }
     }
   }
+
+  private QueryCriteriaParserContext createContext(final QueryParameter annotation) {
+    final Set<String> allowedKeys =
+        annotation.allowedKeys().length > 0 ?
+            new HashSet<>(Arrays.asList(annotation.allowedKeys()))
+            : null;
+    final Set<String> notAllowedKeys =
+        annotation.notAllowedKeys().length > 0 ?
+            new HashSet<>(Arrays.asList(annotation.notAllowedKeys()))
+            : null;
+    return new QueryCriteriaParserContext(allowedKeys, notAllowedKeys);
+  }
+
+  private boolean isValidOptional(final MethodParameter parameter) {
+    return (parameter.getParameterType().equals(Optional.class)
+        && parameter.getGenericParameterType() instanceof ParameterizedType
+        && Specification.class.equals(((ParameterizedType) parameter.getGenericParameterType())
+        .getActualTypeArguments()[0]));
+  }
+
 }

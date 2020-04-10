@@ -1,17 +1,17 @@
 package io.github.manuelarte.spring.queryparameter.jpa.model;
 
-import io.github.manuelarte.spring.queryparameter.jpa.util.TriPredicate;
+import io.github.manuelarte.spring.queryparameter.jpa.operatorpredicate.OperatorPredicate;
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
+import io.github.manuelarte.spring.queryparameter.util.TriPredicate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import io.github.manuelarte.spring.queryparameter.jpa.operatorpredicate.OperatorPredicate;
 
-public class OperatorsPredicateProviderImpl implements OperatorsPredicateProvider {
+public class OperatorPredicateProviderImpl implements OperatorPredicateProvider {
 
   private final List<OperatorPredicateEntry> operatorPredicateEntries;
 
-  public OperatorsPredicateProviderImpl() {
+  public OperatorPredicateProviderImpl() {
     this.operatorPredicateEntries = Collections.synchronizedList(new ArrayList<>());
   }
 

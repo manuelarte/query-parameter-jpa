@@ -1,18 +1,25 @@
-# JPA Query Param
+# Query Parameter JPA
 
 JPA Query Param is a library that allows you to add a query parameter to your endpoints.
 
+# Table of Contents
+1. [Prerequisites](#prerequisites)
+2. [Installation](#installation)
+3. [Concatenate params](#concatenate-params)
+4. [Customization](#customization)
+
 ## Prerequisites
 
+- Java 8 or above
 - Spring Data JPA
 - The repositories you want to query needs to implement JpaSpecificationExecutor<T>
 
 ## Installation
 
-Add the following dependency in your project to start using JPA Query Param.
+Add the following dependency in your project to start using Query Parameter JPA.
 
 ```bash
-implementation 'org.manuel.spring:query-parameter-jpa:0.0.1-SNAPSHOT'
+implementation 'org.manuel.spring:query-parameter-jpa:{latest-version}'
 ```
 
 ## Usage
@@ -78,6 +85,13 @@ Below an example to match age >= 18
 GET /entities?q=age:>=18
 ```
 
+# In (:in:(xxx,yyy,...))
+
+Below an example get gender in MALE and FEMALE
+```bash
+GET /entities?q=gender:in:(MALE,FEMALE)
+```
+
 ## Concatenate params
 
 It's possible to concatenate params AND (;), OR (|).
@@ -91,6 +105,28 @@ If we want entities whose firstname is Manuel *or* age less than 18
 ```bash
 GET /entities?q=firstName::Manuel|age:<18
 ```
+
+## Customization
+
+### Allow or not allow keys
+
+It's possible to filter the keys that are allow or not allow to be queried (by default every key is allowed).
+As an example, if I only want to query by firstName and lastName
+```java
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Entity>> findByQuerying(@QueryParameter(entity = Entity.class, allowedKeys={"firstName", "lastName"}) Specification<Entity> query) {
+        return ResponseEntity.ok(entityService.findAll(query));
+    }
+```
+Or if only want to not allow createdBy field
+```java
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Entity>> findByQuerying(@QueryParameter(entity = Entity.class, notAllowedKeys="createdBy") Specification<Entity> query) {
+        return ResponseEntity.ok(entityService.findAll(query));
+    }
+```
+
+Then the parser will throw a QueryParserException if finds a not allowed key.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

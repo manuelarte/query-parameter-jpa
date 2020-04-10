@@ -1,10 +1,10 @@
 package io.github.manuelarte.spring.queryparameter.jpa.model;
 
-import io.github.manuelarte.spring.queryparameter.jpa.util.TriPredicate;
 import io.github.manuelarte.spring.queryparameter.jpa.operatorpredicate.OperatorPredicate;
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
+import io.github.manuelarte.spring.queryparameter.util.TriPredicate;
 
-public interface OperatorsPredicateProvider {
+public interface OperatorPredicateProvider {
 
   void addOperatorPredicateSelector(TriPredicate<Class<?>, String, Operator<Object>> predicate,
       OperatorPredicate<Object> operatorPredicate);

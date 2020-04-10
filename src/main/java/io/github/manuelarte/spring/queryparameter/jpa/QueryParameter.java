@@ -11,6 +11,11 @@ import java.lang.annotation.Target;
 public @interface QueryParameter {
 
   Class<?> entity();
+
   String paramName() default "q";
+
+  String[] allowedKeys() default {};
+
+  String[] notAllowedKeys() default {};
 
 }
