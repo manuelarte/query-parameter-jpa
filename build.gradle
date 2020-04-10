@@ -1,0 +1,94 @@
+plugins {
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id "nebula.facet" version "7.0.8"
+    id 'com.palantir.git-version' version '0.12.3'
+    id 'checkstyle'
+    id 'maven-publish'
+}
+
+group = 'org.manuel.spring'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+facets {
+    integrationTest {
+        parentSourceSet = 'main'
+        testTaskName = 'integrationTest'
+        includeInCheckLifecycle = true
+    }
+}
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
+dependencies {
+    implementation 'org.manuel.spring:query-parameter:0.0.1-SNAPSHOT'
+    compileOnly 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa:2.2.6.RELEASE'
+
+    integrationTestImplementation('org.springframework.boot:spring-boot-starter-test:2.2.6.RELEASE') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.2.6.RELEASE'
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
+    integrationTestRuntime 'com.h2database:h2:1.4.200'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+integrationTest {
+    useJUnitPlatform()
+}
+
+jar {
+    enabled = true
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier = "sources"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            pom {
+                name = 'JPA Query Parameter Library'
+                description = 'Library to use query parameter with JPA'
+                url = 'http://www.example.com/library'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'manuelarte'
+                        name = 'Manuel Doncel Martos'
+                        email = 'manueldoncelmartos@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://example.com/my-library.git'
+                    developerConnection = 'scm:git:ssh://example.com/my-library.git'
+                    url = 'http://example.com/my-library/'
+                }
+            }
+        }
+    }
+}
