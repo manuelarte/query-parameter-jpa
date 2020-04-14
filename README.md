@@ -5,8 +5,9 @@ JPA Query Param is a library that allows you to add a query parameter to your en
 # Table of Contents
 1. [Prerequisites](#prerequisites)
 2. [Installation](#installation)
-3. [Concatenate params](#concatenate-params)
-4. [Customization](#customization)
+3. [Supported Query Operations](#supported-query-operations)
+4. [Concatenate params](#concatenate-params)
+5. [Customization](#customization)
 
 ## Prerequisites
 
@@ -50,42 +51,42 @@ GET /entities?q=firstName::Manuel;age:<18
 
 ## Query Operations supported
 
-# Equals (::)
+### Equals (::)
 
 Below an example to match firstName == Manuel
 ```bash
 GET /entities?q=firstName::Manuel
 ```
 
-# Lower than (:<)
+### Lower than (:<)
 
 Below an example to match age < 18
 ```bash
 GET /entities?q=age:<18
 ```
 
-# Lower than or equal (:<=)
+### Lower than or equal (:<=)
 
 Below an example to match age <= 18
 ```bash
 GET /entities?q=age:<=18
 ```
 
-# Greater than (:>)
+### Greater than (:>)
 
 Below an example to match age > 18
 ```bash
 GET /entities?q=age:>18
 ```
 
-# Greater than or equal (:>=)
+### Greater than or equal (:>=)
 
 Below an example to match age >= 18
 ```bash
 GET /entities?q=age:>=18
 ```
 
-# In (:in:(xxx,yyy,...))
+### In (:in:(xxx,yyy,...))
 
 Below an example get gender in MALE and FEMALE
 ```bash
