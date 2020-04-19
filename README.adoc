@@ -135,7 +135,7 @@ GET /entities?q=firstName::Manuel|age:<18
 
 == Customization
 
-=== Allow or not allow keys
+=== Keys filtering
 
 It's possible to filter the keys that are allow or not allow to be queried (by default every key is allowed).
 As an example, if I only want to query by firstName and lastName
