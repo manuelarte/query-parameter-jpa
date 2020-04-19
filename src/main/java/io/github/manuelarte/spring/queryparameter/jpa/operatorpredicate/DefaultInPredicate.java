@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultInPredicate<V> implements OperatorPredicate<V> {
 
+  @Override
   public Predicate getPredicateByKeyAndValue(final Path path, final V value,
       final CriteriaBuilder criteriaBuilder) {
     final In<Object> in = criteriaBuilder.in(path);

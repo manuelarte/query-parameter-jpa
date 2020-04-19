@@ -81,7 +81,7 @@ class QueryParameterJpaApplicationJpaTests {
     createAndPersistParentEntity("Test", "Surname", 40);
     entityManager.flush();
 
-    final QueryCriteria queryCriteria = new QueryCriteria(new QueryCriterion("firstName",
+    final QueryCriteria queryCriteria = new QueryCriteria(new QueryCriterion<>("firstName",
         new InOperator(), Arrays.asList("Manuel", "Antonio")));
     final Specification<ParentEntity> specification = new QueryCriteriaJpaSpecification<>(
         ParentEntity.class, queryCriteria, typeTransformerProvider,

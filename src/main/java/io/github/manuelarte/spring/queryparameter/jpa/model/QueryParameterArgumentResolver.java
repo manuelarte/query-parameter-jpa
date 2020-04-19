@@ -41,6 +41,7 @@ public class QueryParameterArgumentResolver implements HandlerMethodArgumentReso
   }
 
   @Override
+  @SuppressWarnings("GetClassOnClass")
   public Object resolveArgument(final MethodParameter parameter,
       final ModelAndViewContainer mavContainer,
       final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
@@ -77,12 +78,12 @@ public class QueryParameterArgumentResolver implements HandlerMethodArgumentReso
 
   private QueryCriteriaParserContext createContext(final QueryParameter annotation) {
     final Set<String> allowedKeys =
-        annotation.allowedKeys().length > 0 ?
-            new HashSet<>(Arrays.asList(annotation.allowedKeys()))
+        annotation.allowedKeys().length > 0
+            ? new HashSet<>(Arrays.asList(annotation.allowedKeys()))
             : null;
     final Set<String> notAllowedKeys =
-        annotation.notAllowedKeys().length > 0 ?
-            new HashSet<>(Arrays.asList(annotation.notAllowedKeys()))
+        annotation.notAllowedKeys().length > 0
+            ? new HashSet<>(Arrays.asList(annotation.notAllowedKeys()))
             : null;
     return new QueryCriteriaParserContext(allowedKeys, notAllowedKeys);
   }

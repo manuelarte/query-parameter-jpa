@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultLowerThanPredicate<V> implements OperatorPredicate<V> {
 
+  @Override
   public Predicate getPredicateByKeyAndValue(final Path path, final V value,
       final CriteriaBuilder criteriaBuilder) {
     return criteriaBuilder.lessThan(path, (Comparable) value);

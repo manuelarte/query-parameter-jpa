@@ -76,7 +76,7 @@ public class QueryCriteriaJpaSpecification<T> implements Specification<T> {
         .getOperatorPredicate(entity, queryCriterion.getKey(),
             (Operator<Object>) queryCriterion.getOperator());
     From join = root;
-    final String[] attributes = queryCriterion.getKey().split("\\.");
+    final String[] attributes = queryCriterion.getKey().split("\\.", -1);
     for (int i = 0, attributesLength = attributes.length - 1; i < attributesLength; i++) {
       join = join.join(attributes[i], JoinType.LEFT);
     }
