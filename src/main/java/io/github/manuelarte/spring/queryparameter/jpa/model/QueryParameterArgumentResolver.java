@@ -3,14 +3,17 @@ package io.github.manuelarte.spring.queryparameter.jpa.model;
 import io.github.manuelarte.spring.queryparameter.config.QueryCriteriaParser;
 import io.github.manuelarte.spring.queryparameter.exceptions.QueryParserException;
 import io.github.manuelarte.spring.queryparameter.jpa.QueryParameter;
+import io.github.manuelarte.spring.queryparameter.jpa.operatorpredicate.OperatorPredicate;
 import io.github.manuelarte.spring.queryparameter.model.QueryCriteriaParserContext;
 import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
+import io.github.manuelarte.spring.queryparameter.operators.queryprovider.OperatorQueryProvider;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,11 +28,11 @@ public class QueryParameterArgumentResolver implements HandlerMethodArgumentReso
 
   private final QueryCriteriaParser queryCriteriaParser;
   private final TypeTransformerProvider typeTransformerProvider;
-  private final OperatorPredicateProvider operatorPredicateProvider;
+  private final OperatorQueryProvider<OperatorPredicate<Object>, Predicate> operatorPredicateProvider;
 
   public QueryParameterArgumentResolver(final QueryCriteriaParser queryCriteriaParser,
       final TypeTransformerProvider typeTransformerProvider,
-      final OperatorPredicateProvider operatorPredicateProvider) {
+      final OperatorQueryProvider<OperatorPredicate<Object>, Predicate> operatorPredicateProvider) {
     this.queryCriteriaParser = queryCriteriaParser;
     this.typeTransformerProvider = typeTransformerProvider;
     this.operatorPredicateProvider = operatorPredicateProvider;

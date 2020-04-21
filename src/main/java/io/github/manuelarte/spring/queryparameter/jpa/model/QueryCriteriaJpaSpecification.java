@@ -3,6 +3,7 @@ package io.github.manuelarte.spring.queryparameter.jpa.model;
 import io.github.manuelarte.spring.queryparameter.jpa.operatorpredicate.OperatorPredicate;
 import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
+import io.github.manuelarte.spring.queryparameter.operators.queryprovider.OperatorQueryProvider;
 import io.github.manuelarte.spring.queryparameter.query.BooleanOperator;
 import io.github.manuelarte.spring.queryparameter.query.OtherCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
@@ -24,13 +25,13 @@ public class QueryCriteriaJpaSpecification<T> implements Specification<T> {
   private final Class<T> entity;
   private final QueryCriteria queryCriteria;
   private final TypeTransformerProvider typeTransformerProvider;
-  private final OperatorPredicateProvider operatorPredicateProvider;
+  private final OperatorQueryProvider<OperatorPredicate<Object>, Predicate> operatorPredicateProvider;
 
   public QueryCriteriaJpaSpecification(
       final Class<T> entity,
       final QueryCriteria queryCriteria,
       final TypeTransformerProvider typeTransformerProvider,
-      final OperatorPredicateProvider operatorPredicateProvider) {
+      final OperatorQueryProvider<OperatorPredicate<Object>, Predicate> operatorPredicateProvider) {
     this.entity = entity;
     this.queryCriteria = queryCriteria;
     this.typeTransformerProvider = typeTransformerProvider;
@@ -73,7 +74,7 @@ public class QueryCriteriaJpaSpecification<T> implements Specification<T> {
           queryCriterion.getValue());
     }
     final OperatorPredicate<Object> operatorPredicate = operatorPredicateProvider
-        .getOperatorPredicate(entity, queryCriterion.getKey(),
+        .getOperatorQuery(entity, queryCriterion.getKey(),
             (Operator<Object>) queryCriterion.getOperator());
     From join = root;
     final String[] attributes = queryCriterion.getKey().split("\\.", -1);
