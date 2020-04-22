@@ -171,7 +171,7 @@ By annotating your field with @QueryParamNull it will be checked that the key is
 
 ==== Example of Query Param annotations
 
-:sourcedir-example-model: spring-boot-example/src/main/java/io/github/manuelarte/spring/queryparameter/jpa/example/model/entities/
+:sourcedir-example-model: spring-boot-example/src/main/java/io/github/manuelarte/spring/queryparameter/jpa/example/model/entities
 
 [source,java]
 ----
