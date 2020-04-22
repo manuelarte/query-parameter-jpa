@@ -157,6 +157,29 @@ public ResponseEntity<List<Entity>> findByQuerying(@QueryParameter(entity = Enti
 
 Then the parser will throw a QueryParserException if finds a not allowed key.
 
+=== Entity Query Parameter Validation Annotation
+
+It's also possible to validate the query parameters to be queried at an entity level.
+
+==== @QueryParamNotNull
+
+By annotating your field with @QueryParamNotNull it will be checked that the key is present.
+
+==== @QueryParamNull
+
+By annotating your field with @QueryParamNull it will be checked that the key is not present.
+
+==== Example of Query Param annotations
+
+:sourcedir-example-model: spring-boot-example/src/main/java/io/github/manuelarte/spring/queryparameter/jpa/example/model/entities/
+
+[source,java]
+----
+include::{sourcedir-example-model}/Example2.java[]
+----
+
+In this example, if we are going to query the Example2 entity, the field _firstName_ is mandatory
+
 == Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 

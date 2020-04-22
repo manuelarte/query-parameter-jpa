@@ -1,8 +1,8 @@
 package io.github.manuelarte.spring.queryparameter.jpa.example.config;
 
 import com.github.javafaker.Faker;
-import io.github.manuelarte.spring.queryparameter.jpa.example.model.entities.Parent;
-import io.github.manuelarte.spring.queryparameter.jpa.example.repositories.ParentRepository;
+import io.github.manuelarte.spring.queryparameter.jpa.example.model.entities.Example1;
+import io.github.manuelarte.spring.queryparameter.jpa.example.repositories.Example1Repository;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -15,18 +15,18 @@ import org.springframework.stereotype.Component;
 @lombok.RequiredArgsConstructor
 public class TestData {
 
-  private final ParentRepository parentRepository;
+  private final Example1Repository example1Repository;
 
   @EventListener(ApplicationReadyEvent.class)
   public void populateTestData() {
-    final List<Parent> parents = parentRepository
+    final List<Example1> example1s = example1Repository
         .saveAll(
-            IntStream.range(0, 4).mapToObj(it -> createFakeParent()).collect(Collectors.toList()));
+            IntStream.range(0, 4).mapToObj(it -> createFakeExample1()).collect(Collectors.toList()));
   }
 
-  private Parent createFakeParent() {
+  private Example1 createFakeExample1() {
     final Faker faker = new Faker();
-    return Parent.builder()
+    return Example1.builder()
         .firstName(faker.name().firstName())
         .lastName(faker.name().lastName())
         .age(new Random().nextInt(100))
