@@ -11,7 +11,6 @@ Manuel Doncel Martos <https://github.com/manuelarte[@manuelarte]>
 :url-ci-circleci: https://circleci.com/gh/manuelarte/query-parameter-jpa
 
 ifdef::status[]
-// image:https://img.shields.io/gem/v/jekyll-asciidoc.svg[Latest Release, link={url-maven}]
 image:https://img.shields.io/badge/license-MIT-blue.svg[MIT License, link=#copyright-and-license]
 image:https://circleci.com/gh/manuelarte/query-parameter-jpa.svg?style=shield[Build status (Circle CI), link={urc-ci-circleci}]
 image:https://img.shields.io/badge/version-{latest-version}-blue[Release version]
@@ -40,134 +39,11 @@ implementation 'org.manuel.spring:query-parameter-jpa:{latest-version}'
 
 == Usage
 
-Add the @EnableQueryParameter annotation in your spring boot application, to import the configuration.
-
-[source,java]
-----
-@SpringBootApplication
-@EnableQueryParameter
-public class SpringBootAppApplication {
-----
-
-Then add the @QueryParameter annotation in a controller you would like to use the query param.
-Here you can see an example:
-
-[source,java]
-----
-@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-public ResponseEntity<List<Entity>> findByQuerying(@QueryParameter(entity = Entity.class) Specification<Entity> query) {
-  return ResponseEntity.ok(entityService.findAll(query));
-}
-----
-
-Then call that endpoint and use the available query operations:
-
-[source,bash]
-----
-GET /entities?q=firstName::Manuel;age:<18
-----
-
-== Query Operations supported
-
-=== Equals (::)
-
-Below an example to match firstName == Manuel
-[source,bash]
-----
-GET /entities?q=firstName::Manuel
-----
-
-=== Lower than (:<)
-
-Below an example to match age < 18
-[source,bash]
-----
-GET /entities?q=age:<18
-----
-
-=== Lower than or equal (:<=)
-
-Below an example to match age <= 18
-[source,bash]
-----
-GET /entities?q=age:<=18
-----
-
-=== Greater than (:>)
-
-Below an example to match age > 18
-[source,bash]
-----
-GET /entities?q=age:>18
-----
-
-=== Greater than or equal (:>=)
-
-Below an example to match age >= 18
-[source,bash]
-----
-GET /entities?q=age:>=18
-----
-
-=== In (:in:(xxx,yyy,...))
-
-Below an example get gender in MALE and FEMALE
-[source,bash]
-----
-GET /entities?q=gender:in:(MALE,FEMALE)
-----
-
-== Concatenate params
-
-It's possible to concatenate params AND (;), OR (|).
-
-As an example:
-If we want entities whose firstname is Manuel *and* age less than 18
-[source,bash]
-----
-GET /entities?q=firstName::Manuel;age:<18
-----
-If we want entities whose firstname is Manuel *or* age less than 18
-[source,bash]
-----
-GET /entities?q=firstName::Manuel|age:<18
-----
+include::https://github.com/manuelarte/query-parameter-model/blob/constraints/queryparameter.adoc[]
 
 == Customization
 
-=== Keys filtering
-
-It's possible to filter the keys that are allow or not allow to be queried (by default every key is allowed).
-As an example, if I only want to query by firstName and lastName
-[source,java]
-----
-@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-public ResponseEntity<List<Entity>> findByQuerying(@QueryParameter(entity = Entity.class, allowedKeys={"firstName", "lastName"}) Specification<Entity> query) {
-  return ResponseEntity.ok(entityService.findAll(query));
-}
-----
-Or if only want to not allow createdBy field
-[source,java]
-----
-@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-public ResponseEntity<List<Entity>> findByQuerying(@QueryParameter(entity = Entity.class, notAllowedKeys="createdBy") Specification<Entity> query) {
-  return ResponseEntity.ok(entityService.findAll(query));
-}
-----
-
-Then the parser will throw a QueryParserException if finds a not allowed key.
-
-=== Entity Query Parameter Validation Annotation
-
-It's also possible to validate the query parameters to be queried at an entity level.
-
-==== @QueryParamNotNull
-
-By annotating your field with @QueryParamNotNull it will be checked that the key is present.
-
-==== @QueryParamNull
-
-By annotating your field with @QueryParamNull it will be checked that the key is not present.
+include::https://github.com/manuelarte/query-parameter-model/blob/constraints/constraints.adoc[]
 
 ==== Example of Query Param annotations
 
