@@ -43,7 +43,7 @@ jobs:
           name: Upload jar
           command: |
             # Skip this for other nodes
-            if [ "$CIRCLE_BRANCH" != 'master' ]; then
+            if [ "$CIRCLE_BRANCH" == 'develop' ]; then
               echo -e "nexusPassword=$nexusPassword" > gradle.properties
               ./gradlew clean build uploadArchives -PnexusUsername=$nexusUsername
             fi

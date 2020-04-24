@@ -5,11 +5,14 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.manuelarte.spring.queryparameter.jpa.config.JpaQueryParamConfig;
-import io.github.manuelarte.spring.queryparameter.jpa.model.OperatorPredicateProvider;
 import io.github.manuelarte.spring.queryparameter.jpa.model.QueryCriteriaJpaSpecification;
+import io.github.manuelarte.spring.queryparameter.jpa.operatorpredicate.OperatorPredicate;
 import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerRegistry;
 import io.github.manuelarte.spring.queryparameter.operators.EqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.InOperator;
+import io.github.manuelarte.spring.queryparameter.operators.NotInOperator;
+import io.github.manuelarte.spring.queryparameter.operators.queryprovider.OperatorQueryProvider;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriterion;
 import java.util.Arrays;
@@ -37,7 +40,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @SpringBootTest(classes = QueryParameterJpaApplicationJpaTests.class)
 @EnableWebMvc // needed for conversion service
 @EnableAutoConfiguration
-@Import({JpaQueryParamConfig.class})
+@Import({TypeTransformerRegistry.class, JpaQueryParamConfig.class})
 class QueryParameterJpaApplicationJpaTests {
 
   @Autowired
@@ -47,7 +50,7 @@ class QueryParameterJpaApplicationJpaTests {
   private TypeTransformerProvider typeTransformerProvider;
 
   @Autowired
-  private OperatorPredicateProvider operatorPredicateProvider;
+  private OperatorQueryProvider<OperatorPredicate<Object>, Predicate> operatorPredicateProvider;
 
   @Test
   @Transactional
@@ -96,6 +99,31 @@ class QueryParameterJpaApplicationJpaTests {
     final List<ParentEntity> actual = entityManager.createQuery(criteria).getResultList();
     assertEquals(2, actual.size());
     assertThat(actual, containsInAnyOrder(oneEntity, twoEntity));
+  }
+
+  @Test
+  @Transactional
+  void testNotInPredicate() {
+    final ParentEntity oneEntity = createAndPersistParentEntity("Manuel", "Doncel", 33);
+    final ParentEntity twoEntity = createAndPersistParentEntity("Antonio", "Doncel", 23);
+    final ParentEntity testEntity = createAndPersistParentEntity("Test", "Surname", 40);
+    entityManager.flush();
+
+    final QueryCriteria queryCriteria = new QueryCriteria(new QueryCriterion<>("firstName",
+        new NotInOperator(new InOperator()), Arrays.asList("Manuel", "Antonio")));
+    final Specification<ParentEntity> specification = new QueryCriteriaJpaSpecification<>(
+        ParentEntity.class, queryCriteria, typeTransformerProvider,
+        operatorPredicateProvider);
+
+    final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    final CriteriaQuery<ParentEntity> criteria = builder.createQuery(ParentEntity.class);
+    final Root<ParentEntity> from = criteria.from(ParentEntity.class);
+
+    final Predicate predicate = specification.toPredicate(from, criteria, builder);
+    criteria.where(predicate);
+    final List<ParentEntity> actual = entityManager.createQuery(criteria).getResultList();
+    assertEquals(1, actual.size());
+    assertEquals(testEntity, actual.get(0));
   }
 
   private ParentEntity createAndPersistParentEntity(final String firstName, final String lastName,
